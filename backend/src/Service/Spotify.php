@@ -37,8 +37,12 @@ final class Spotify
         }
 
         $query = [];
+        $type = 'track';
 
-        if ($song instanceof StationMedia && !empty($song->isrc)) {
+        if ($song instanceof StationMedia && !empty($song->upc)) {
+            $query[] = 'upc:' . $song->upc;
+            $type = 'album';
+        } elseif ($song instanceof StationMedia && !empty($song->isrc)) {
             $query[] = 'isrc:' . $song->isrc;
         } else {
             if (!empty($song->title)) {
@@ -69,13 +73,23 @@ final class Spotify
                 ],
                 RequestOptions::QUERY => [
                     'q' => implode(' ', $query),
-                    'type' => 'track',
+                    'type' => $type,
                     'limit' => 5,
                 ],
             ]
         );
 
         $data = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        if ($type === 'album') {
+            foreach (($data['albums']['items'] ?? []) as $album) {
+                if (!empty($album['images'][0]['url'])) {
+                    return (string)$album['images'][0]['url'];
+                }
+            }
+
+            return null;
+        }
 
         foreach (($data['tracks']['items'] ?? []) as $track) {
             $images = $track['album']['images'] ?? [];
