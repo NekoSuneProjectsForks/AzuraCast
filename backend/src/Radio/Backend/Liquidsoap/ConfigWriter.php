@@ -323,16 +323,14 @@ final class ConfigWriter implements EventSubscriberInterface
                     $overlayPredicates = [];
                     foreach ($scheduleItems as $scheduleItem) {
                         $playTime = $this->getScheduledPlaylistPlayTime($event, $scheduleItem);
-                        $overlayPredicates[] = 'predicate.activates({' . $playTime . '})';
+                        $overlayPredicates[] = '(' . $playTime . ')';
                     }
 
                     if (!empty($overlayPredicates)) {
-                        $overlayPredicate = count($overlayPredicates) === 1
-                            ? $overlayPredicates[0]
-                            : 'predicate.or([' . implode(', ', $overlayPredicates) . '])';
+                        $overlayPredicate = implode(' or ', $overlayPredicates);
 
                         $overlaySource = sprintf(
-                            'source.available(%s, %s)',
+                            'source.available(%s, predicate.activates({%s}))',
                             $playlistVarName,
                             $overlayPredicate
                         );
