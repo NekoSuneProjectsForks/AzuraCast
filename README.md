@@ -71,6 +71,14 @@ ghcr.io/nekosuneprojectsforks/azuracast:sha-<commit>
 
 The supplied Docker Compose installer and sample configuration use the maintained fork image by default.
 
+The web updater is also fork-owned:
+
+```text
+ghcr.io/nekosuneprojectsforks/azuracast-updater:latest
+```
+
+It is built from the updater Dockerfile stored in this repository and remains compatible with AzuraCast's existing Watchtower-based web updater API.
+
 ### Pull Manually
 
 ```bash
