@@ -62,18 +62,38 @@ final class DjAuthCommand extends AbstractCommand
      */
     private function getCredentials(array $payload = []): array
     {
-        $user = Types::stringOrNull($payload['user'] ?? null, true);
-        $pass = Types::stringOrNull($payload['password'] ?? null, true);
+        // Liquidsoap currently sends `user` and `password`, but accept common
+        // aliases as well so streamer authentication remains compatible with
+        // source clients/proxies that normalize these field names differently.
+        $user = Types::stringOrNull(
+            $payload['user'] ?? $payload['username'] ?? $payload['login'] ?? null,
+            true
+        );
+        $pass = Types::stringOrNull(
+            $payload['password'] ?? $payload['pass'] ?? null,
+            true
+        );
 
         if (null === $pass) {
             throw new InvalidArgumentException('No credentials provided!');
         }
 
-        if (null === $user || 'source' === $user) {
-            foreach ([',', ':'] as $separator) {
-                if (str_contains($pass, $separator)) {
-                    [$user, $pass] = explode($separator, $pass, 2);
-                    return [$user, $pass];
+        // Shoutcast/ICY source connections do not carry a username. In that
+        // case Liquidsoap supplies the configured/default username (normally
+        // "source") and DJ software sends "username:password" in the password
+        // field. Support the common separators used by broadcast clients.
+        if (null === $user || 'source' === strtolower($user)) {
+            foreach ([':', ',', ';'] as $separator) {
+                if (!str_contains($pass, $separator)) {
+                    continue;
+                }
+
+                [$parsedUser, $parsedPass] = explode($separator, $pass, 2);
+                $parsedUser = trim($parsedUser);
+                $parsedPass = trim($parsedPass);
+
+                if ('' !== $parsedUser && '' !== $parsedPass) {
+                    return [$parsedUser, $parsedPass];
                 }
             }
         }
