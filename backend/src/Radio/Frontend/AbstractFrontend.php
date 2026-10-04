@@ -109,10 +109,13 @@ abstract class AbstractFrontend extends AbstractLocalAdapter
             );
 
             if (null !== $configuredUri) {
+                // Native Icecast/Shoutcast directories advertise host/port +
+                // mount paths; they cannot preserve AzuraCast's /listen/... web
+                // proxy prefix. Always use the configured station hostname root.
                 return $configuredUri
                     ->withQuery('')
                     ->withFragment('')
-                    ->withPath(rtrim($configuredUri->getPath(), '/'));
+                    ->withPath('');
             }
         }
 
