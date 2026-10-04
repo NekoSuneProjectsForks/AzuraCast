@@ -1764,6 +1764,11 @@ export interface ApiHasSongFields {
      */
     isrc?: string | null;
     /**
+     * The UPC/EAN barcode associated with the release, when present in media tags.
+     * @example "720642462928"
+     */
+    upc?: string | null;
+    /**
      * Lyrics to the song.
      * @example ""
      */
@@ -1781,6 +1786,11 @@ export interface ApiUploadFile {
      * @example ""
      */
     file: string;
+    /**
+     * Optional playlist IDs to assign the uploaded media to immediately.
+     * @example [1,2]
+     */
+    playlists?: number[];
 }
 
 export interface ApiUploadedRecordStatus {
@@ -2177,6 +2187,10 @@ export interface Settings {
      * @example "SAMPLE-API-KEY"
      */
     last_fm_api_key?: string | null;
+    /** Spotify Web API client ID for optional album art lookup. */
+    spotify_client_id?: string | null;
+    /** Spotify Web API client secret for optional album art lookup. */
+    spotify_client_secret?: string | null;
     /**
      * Hide AzuraCast Branding on Public Pages
      * @example "false"
