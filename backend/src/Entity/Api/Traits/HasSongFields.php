@@ -46,6 +46,12 @@ trait HasSongFields
     public ?string $isrc = '';
 
     #[OA\Property(
+        description: 'The UPC/EAN barcode associated with the release, when present in media tags.',
+        example: '720642462928'
+    )]
+    public ?string $upc = '';
+
+    #[OA\Property(
         description: 'Lyrics to the song.',
         example: ''
     )]
