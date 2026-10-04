@@ -85,6 +85,27 @@ final class StationFrontendConfiguration extends AbstractArrayEntity
         set => Types::stringOrNull($value, true);
     }
 
+    #[OA\Property(
+        description: 'Publish this station to the native Icecast/Shoutcast directory when supported.'
+    )]
+    public bool $enable_public_directory = false {
+        set (bool|int|string|null $value) => Types::bool($value);
+    }
+
+    #[OA\Property(
+        description: 'Public root URL advertised to radio directories. Intended for NAT, reverse proxies and Cloudflare Tunnel. Use a dedicated hostname that proxies directly to this station frontend.'
+    )]
+    public ?string $public_directory_url = null {
+        set => Types::stringOrNull($value, true);
+    }
+
+    #[OA\Property(
+        description: 'Icecast YP directory endpoint. Defaults to the Xiph directory.'
+    )]
+    public ?string $icecast_yp_url = null {
+        set => Types::stringOrNull($value, true);
+    }
+
     /**
      * @inheritDoc
      */
