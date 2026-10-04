@@ -172,7 +172,7 @@ final class Version
                 );
             }
 
-            return 'NekoSune Fork main ' . $commitText;
+            return 'NekoSune Modern ' . $commitText;
         }
 
         return 'NekoSune Fork v' . self::STABLE_VERSION;
