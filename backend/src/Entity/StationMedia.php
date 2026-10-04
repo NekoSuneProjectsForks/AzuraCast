@@ -217,7 +217,6 @@ final class StationMedia implements
                 'genre' => $this->genre,
                 'unsynchronised_lyric' => $this->lyrics,
                 'isrc' => $this->isrc,
-                'upc' => $this->upc,
             ]
         );
 
