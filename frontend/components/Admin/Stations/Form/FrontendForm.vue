@@ -36,6 +36,44 @@
                 />
             </div>
 
+            <form-fieldset>
+                <template #label>
+                    {{ $gettext('Public Radio Directory Listing') }}
+                </template>
+                <template #description>
+                    {{
+                        $gettext('Publish this station to the native Icecast or Shoutcast directory. For Cloudflare Tunnel or reverse-proxy installs, set a public radio hostname that routes directly to this station frontend instead of exposing the internal IP and broadcast port.')
+                    }}
+                </template>
+
+                <div class="row g-3">
+                    <form-group-checkbox
+                        id="edit_form_enable_public_directory"
+                        class="col-md-12"
+                        :field="r$.frontend_config.enable_public_directory"
+                        :label="$gettext('Enable Public Directory Listing')"
+                    />
+
+                    <form-group-field
+                        v-if="form.frontend_config.enable_public_directory"
+                        id="edit_form_public_directory_url"
+                        class="col-md-12"
+                        :field="r$.frontend_config.public_directory_url"
+                        :label="$gettext('Public Directory / Listener Root URL')"
+                        :description="$gettext('Example: https://radio.example.com. For Cloudflare Tunnel, route this hostname directly to this station radio service. Do not use a private IP or internal radio port. Native directories cannot reliably advertise an AzuraCast path-prefix URL such as /listen/station-name.')"
+                    />
+
+                    <form-group-field
+                        v-if="form.frontend_config.enable_public_directory && !isShoutcastFrontend"
+                        id="edit_form_icecast_yp_url"
+                        class="col-md-12"
+                        :field="r$.frontend_config.icecast_yp_url"
+                        :label="$gettext('Icecast YP Directory Endpoint')"
+                        :description="$gettext('Defaults to the public Xiph/Icecast directory. You may use another Icecast-compatible YP endpoint.')"
+                    />
+                </div>
+            </form-fieldset>
+
             <div class="row g-3 mb-3">
                 <form-group-field
                     id="edit_form_frontend_source_pw"
@@ -181,6 +219,7 @@ import InfoCard from "~/components/Common/InfoCard.vue";
 import Tab from "~/components/Common/Tab.vue";
 import FormFieldset from "~/components/Form/FormFieldset.vue";
 import FormGroupField from "~/components/Form/FormGroupField.vue";
+import FormGroupCheckbox from "~/components/Form/FormGroupCheckbox.vue";
 import FormGroupMultiCheck from "~/components/Form/FormGroupMultiCheck.vue";
 import FormGroupSelect from "~/components/Form/FormGroupSelect.vue";
 import { FrontendAdapters } from "~/entities/ApiInterfaces.ts";
