@@ -48,7 +48,7 @@
                 >
                     <div class="card-body">
                         <p class="card-text">
-                            {{ $gettext('This maintained fork follows the NekoSuneProjectsForks/AzuraCast main branch:') }}
+                            {{ $gettext('This maintained fork follows the NekoSuneProjectsForks/AzuraCast modern branch:') }}
                         </p>
                         <p class="card-text typography-subheading">
                             {{ langReleaseChannel }}
@@ -135,7 +135,7 @@
                     <div class="card-body">
                         <p class="card-text">
                             {{
-                                $gettext('This fork updates from NekoSuneProjectsForks/AzuraCast main and the matching GHCR image. Back up first if you update manually or replace the container yourself.')
+                                $gettext('This fork updates from NekoSuneProjectsForks/AzuraCast modern and the matching GHCR image. Back up first if you update manually or replace the container yourself.')
                             }}
                         </p>
 
@@ -211,7 +211,7 @@ const { data: updates, refetch: checkForUpdates } =
 const { $gettext } = useTranslate();
 
 const langReleaseChannel = computed(() => {
-    return $gettext("Fork Main");
+    return $gettext("Modern");
 });
 
 const needsUpdates = computed(() => {
@@ -229,7 +229,9 @@ const { showAlert } = useDialog();
 
 const doUpdate = async () => {
     const { value } = await showAlert({
-        title: $gettext("Update NekoSune AzuraCast Fork? Your installation will restart."),
+        title: $gettext(
+            "Update NekoSune AzuraCast Fork? Your installation will restart.",
+        ),
         confirmButtonText: $gettext("Update via Web"),
     });
 
