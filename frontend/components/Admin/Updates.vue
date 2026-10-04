@@ -1,6 +1,6 @@
 <template>
     <h2 class="outside-card-header mb-1">
-        {{ $gettext('Update AzuraCast') }}
+        {{ $gettext('Update NekoSune AzuraCast Fork') }}
     </h2>
 
     <loading :loading="propsLoading" lazy>
@@ -48,7 +48,7 @@
                 >
                     <div class="card-body">
                         <p class="card-text">
-                            {{ $gettext('Your installation is currently on this release channel:') }}
+                            {{ $gettext('This maintained fork follows the NekoSuneProjectsForks/AzuraCast main branch:') }}
                         </p>
                         <p class="card-text typography-subheading">
                             {{ langReleaseChannel }}
@@ -73,7 +73,7 @@
             <div class="col col-md-6">
                 <card-page
                     header-id="hdr_update_via_web"
-                    :title="$gettext('Update AzuraCast via Web')"
+                    :title="$gettext('Update NekoSune AzuraCast Fork via Web')"
                 >
                     <template v-if="props && props.enableWebUpdates">
                         <div class="card-body">
@@ -135,7 +135,7 @@
                     <div class="card-body">
                         <p class="card-text">
                             {{
-                                $gettext('To customize installation settings, or if automatic updates are disabled, you can follow our standard update instructions to update via your SSH console.')
+                                $gettext('This fork updates from NekoSuneProjectsForks/AzuraCast main and the matching GHCR image. Back up first if you update manually or replace the container yourself.')
                             }}
                         </p>
 
@@ -211,9 +211,7 @@ const { data: updates, refetch: checkForUpdates } =
 const { $gettext } = useTranslate();
 
 const langReleaseChannel = computed(() => {
-    return props.value?.releaseChannel === "stable"
-        ? $gettext("Stable")
-        : $gettext("Rolling Release");
+    return $gettext("Fork Main");
 });
 
 const needsUpdates = computed(() => {
@@ -231,7 +229,7 @@ const { showAlert } = useDialog();
 
 const doUpdate = async () => {
     const { value } = await showAlert({
-        title: $gettext("Update AzuraCast? Your installation will restart."),
+        title: $gettext("Update NekoSune AzuraCast Fork? Your installation will restart."),
         confirmButtonText: $gettext("Update via Web"),
     });
 
