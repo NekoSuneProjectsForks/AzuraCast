@@ -95,6 +95,29 @@ abstract class AbstractFrontend extends AbstractLocalAdapter
             ->withPath('');
     }
 
+    public function getDirectoryPublicUrl(
+        Station $station,
+        ?UriInterface $baseUrl = null
+    ): UriInterface {
+        $configuredUrl = $station->frontend_config->public_directory_url;
+        if (!empty($configuredUrl)) {
+            $configuredUri = Urls::tryParseUserUrl(
+                $configuredUrl,
+                'Public Directory URL',
+                false
+            );
+
+            if (null !== $configuredUri) {
+                return $configuredUri
+                    ->withQuery('')
+                    ->withFragment('')
+                    ->withPath(rtrim($configuredUri->getPath(), '/'));
+            }
+        }
+
+        return $this->getPublicUrl($station, $baseUrl);
+    }
+
     abstract public function getAdminUrl(Station $station, ?UriInterface $baseUrl = null): UriInterface;
 
     public function getNowPlaying(Station $station, bool $includeClients = true): Result
