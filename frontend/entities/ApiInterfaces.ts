@@ -2551,6 +2551,16 @@ export interface StationFrontendConfiguration {
     allowed_ips?: string | null;
     sc_license_id?: string | null;
     sc_user_id?: string | null;
+    /** Publish this station to the native Icecast/Shoutcast directory when supported. */
+    enable_public_directory?: boolean;
+    /**
+     * Public root URL advertised to radio directories. Intended for NAT, reverse proxies and Cloudflare Tunnel.
+     */
+    public_directory_url?: string | null;
+    /** Icecast YP directory endpoint. Defaults to the Xiph directory. */
+    icecast_yp_url?: string | null;
+    /** Technical contact e-mail advertised to Icecast YP directories. */
+    directory_admin_email?: string | null;
 }
 
 export type StationHlsStream = HasAutoIncrementId & {
