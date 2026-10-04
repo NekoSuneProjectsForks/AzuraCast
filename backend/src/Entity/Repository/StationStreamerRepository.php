@@ -67,7 +67,9 @@ final class StationStreamerRepository extends AbstractStationBasedRepository
     ): ?StationStreamer {
         $username = trim($username);
 
-        $qb = $this->repository->createQueryBuilder('streamer')
+        $qb = $this->em->createQueryBuilder()
+            ->select('streamer')
+            ->from(StationStreamer::class, 'streamer')
             ->andWhere('streamer.station = :station')
             ->andWhere('LOWER(streamer.streamer_username) = LOWER(:username)')
             ->setParameter('station', $station)
