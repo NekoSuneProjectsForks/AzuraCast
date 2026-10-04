@@ -1,109 +1,163 @@
-![](https://github.com/AzuraCast/AzuraCast/raw/main/resources/azuracast.png)![](https://static.scarf.sh/a.png?x-pxid=d5169ead-cdcf-482c-ab64-c7137d3f8769)
+# NekoSune AzuraCast Fork
 
-# AzuraCast: A Simple, Self-Hosted Web Radio Management Suite
+[![Build, Test and Publish](https://github.com/NekoSuneProjectsForks/AzuraCast/actions/workflows/default.yml/badge.svg)](https://github.com/NekoSuneProjectsForks/AzuraCast/actions/workflows/default.yml)
+[![AGPL-3.0 License](https://img.shields.io/github/license/NekoSuneProjectsForks/AzuraCast.svg)](LICENSE.md)
+[![GHCR](https://img.shields.io/badge/GHCR-ghcr.io%2Fnekosuneprojectsforks%2Fazuracast-blue)](https://github.com/NekoSuneProjectsForks/AzuraCast/pkgs/container/azuracast)
 
-[![Build Status](https://github.com/azuracast/azuracast/workflows/Build,%20Test%20and%20Publish/badge.svg)](https://github.com/AzuraCast/AzuraCast/actions)
-[![Latest Stable Release](https://img.shields.io/packagist/v/azuracast/azuracast.svg?label=latest+stable+version)]()
-[![AGPL-3.0 License](https://img.shields.io/github/license/azuracast/azuracast.svg)]()
-[![Ethical Open Source](https://img.shields.io/badge/open-ethical-%234baaaa)](https://ethicalsource.dev/)
-[![Mastodon Follow](https://img.shields.io/mastodon/follow/113766260463173065?domain=https%3A%2F%2Ffloss.social&style=social)](https://floss.social/@AzuraCast)
-[![BlueSky Follow](https://img.shields.io/bluesky/followers/azuracast.com)](https://bsky.app/profile/azuracast.com)
-[![Built with Depot](https://img.shields.io/badge/built_with-Depot-%2346A75A?labelColor=%23191719)](https://depot.dev/?utm_source=AzuraCast)
+> **Community-maintained modified fork of AzuraCast.**
+>
+> Maintained for the NekoSune Community with additional fixes, compatibility work, radio features and deployment improvements that are intentionally developed outside the official AzuraCast release stream.
+>
+> **Loved by the NekoSune Community. 💚**
 
-![](https://www.azuracast.com/img/ScreenshotTour.gif)
+This repository is based on the upstream [AzuraCast](https://github.com/AzuraCast/AzuraCast) project and remains licensed under the **GNU Affero General Public License v3.0**.
 
-AzuraCast is an Internet radio station "in a box"; it is a full-featured, self-contained and self-hostable software
-suite, distributed using Docker, that contains a full free and open-source web radio software stack and a powerful but
-intuitive and accessible web interface (and well-documented API) to manage your stations.
+It is **not the official AzuraCast repository** and is not maintained by the official AzuraCast team. Upstream deserves full credit for the original project, architecture and the large majority of the codebase.
 
-You can learn more about AzuraCast via our [Documentation](https://www.azuracast.com/docs):
+## Why This Fork Exists
 
-- [About AzuraCast](https://www.azuracast.com/docs/#core-features)
-- [Included Software](https://www.azuracast.com/docs/#whats-included)
-- [System Requirements](https://www.azuracast.com/docs/getting-started/requirements/)
-- [Installation](https://www.azuracast.com/docs/getting-started/installation/)
+The NekoSune fork exists to maintain a practical radio stack for our own stations and community while being able to ship fixes and features independently from upstream release decisions.
 
-AzuraCast is built and maintained by passionate human beings, and 100% of our code is reviewed and approved by humans. We do not allow AI to replace our role as software designers or developers, nor do we permit "vibe-coded" contributions. See [our policy on generative AI](https://github.com/AzuraCast/.github/blob/main/CONTRIBUTING.md#our-policy-on-generative-ai) for more details.
+This fork especially focuses on:
 
-## Live Demo
+- bugs and regressions encountered in real station deployments;
+- Icecast2 and Shoutcast2 source/DJ compatibility;
+- WebDJ reliability;
+- AutoDJ and jingle behaviour;
+- reverse proxy and Cloudflare Tunnel deployments;
+- public Icecast/Shoutcast directory registration;
+- richer media metadata and automatic album-art matching;
+- API-first station/media/playlist management;
+- Docker and self-hosting workflows.
 
-Want to see AzuraCast for yourself? Visit our demo site at [demo.azuracast.com](https://demo.azuracast.com/):
+Some fixes in this fork target issues or behaviour that members of the NekoSune Community report having remained broken, incomplete or unresolved in upstream deployments for **months or, in some cases, years**. That statement describes the experience and maintenance goals of this fork; it is not a claim that upstream maintainers are inactive or obligated to implement the same solutions.
 
-* Username: `demo@azuracast.com`
-* Password: `demo`
+## Fork Update Policy
 
-## Install AzuraCast
+The maintained release channel for this fork is:
 
-To install AzuraCast, you should have a basic understanding of the Linux shell terminal. Once installed, every aspect of
-your radio station can be managed via AzuraCast's web interface.
+```text
+NekoSuneProjectsForks/AzuraCast
+branch: main
+```
 
-Follow our **[installation guide](https://www.azuracast.com/docs/getting-started/installation/)** for instructions on
-how to install AzuraCast on your own server.
+Fork installations check **this repository's `main` branch directly on GitHub** for updates instead of using the official AzuraCast Central update service for release decisions.
 
-## License
+This prevents a modified installation from being told to move back to an upstream image that does not contain the NekoSune fixes.
 
-AzuraCast is licensed under
-the [Affero GNU General Public License (AGPL) version 3.0](https://github.com/AzuraCast/AzuraCast/blob/main/LICENSE.md).
-This project is free and open-source software, and pull requests are always welcome.
+The admin update page reports whether the installed commit is behind this fork's `main` branch.
 
-## Need Help?
+## Docker Images
 
-If you need help with AzuraCast, the first place you should visit is
-our [Support page](https://www.azuracast.com/docs/help/troubleshooting/), which features solutions to a number of
-commonly encountered issues and questions, as well as instructions on how to
-check your server's log files for more details. If you do need our help via GitHub, supplying these logs is absolutely
-essential in helping us diagnose and resolve your issue.
+GitHub Actions builds the maintained Docker image for **linux/amd64** and **linux/arm64**.
 
-New feature requests are powered by FeatureUpvote. You can visit
-our [Feature Request Page](https://features.azuracast.com/) to submit a new feature request or vote on existing ones.
+Default image:
 
-For bug and error reports, we rely exclusively on
-our [GitHub Issues board](https://github.com/AzuraCast/AzuraCast/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc) to
-diagnose, track and update these reports. First, check to make sure the issue you're experiencing isn't already reported
-on GitHub. If it is, you can subscribe to the existing ticket for updates on the issue's progress. If your issue or
-request isn't already reported, click the "New Issue" button to create it. Make sure to follow the template provided, as
-it asks important details that are very important to our team.
+```text
+ghcr.io/nekosuneprojectsforks/azuracast:main
+```
 
-Please keep in mind that AzuraCast is a free software project built and maintained by volunteers, so there may be some
-delays in getting back to you. We will make the absolute best effort possible to resolve your issues and answer your
-questions.
+The `main` branch also publishes:
 
-## Communities and Social Media
+```text
+ghcr.io/nekosuneprojectsforks/azuracast:latest
+ghcr.io/nekosuneprojectsforks/azuracast:main
+ghcr.io/nekosuneprojectsforks/azuracast:sha-<commit>
+```
 
-We frequently post to social media any time there are significant updates to our software, security issues that users
-should be aware of, or upcoming changes to third-party software. You can get these updates in a more timely fashion by
-following our accounts:
+The supplied Docker Compose installer and sample configuration use the maintained fork image by default.
 
-- On BlueSky at [@azuracast.com](https://bsky.app/profile/azuracast.com)
+### Pull Manually
 
-- On Mastodon at [@AzuraCast@floss.social](https://floss.social/@AzuraCast)
+```bash
+docker pull ghcr.io/nekosuneprojectsforks/azuracast:main
+```
 
-If you are an AzuraCast user, station owner, developer or other contributor, you can also join our Discord community,
-where you can ask questions, share your station and more:
+### Compose Override
 
-- [Discord](https://discord.gg/azuracast)
+You can explicitly pin the fork channel with:
 
-Note that our social media channels aren't the best way to report issues to us; instead, you should use the GitHub
-issues instructions above, as this allows our whole team to help resolve and track the progress of the issue in one
-location.
+```env
+AZURACAST_VERSION=main
+```
 
-## Friends of AzuraCast
+Then update using your normal AzuraCast Docker update flow. The updater container will pull the image configured for the running AzuraCast service, which in this fork is the NekoSune GHCR image by default.
 
-We would like to thank the following organizations for their support of AzuraCast's ongoing development:
+## Fork Features and Fixes
 
-- [JetBrains](https://www.jetbrains.com/) for making our development faster, easier and more productive with tools like
-  PhpStorm
-- [CrowdIn](https://crowdin.com/) for giving us a simple and powerful tool to help translate our application for users
-  around the world
-- [BrowserStack](https://www.browserstack.com/) for giving us tools to help test our software's accessibility and
-  features across multiple browsers and operating systems.
-- [Depot](https://depot.dev/?utm_source=AzuraCast) for powering our Docker image builds.
+Current fork work includes additions such as:
 
-- The creators and maintainers of the many free and open-source tools that AzuraCast is built on, who have done so much
-  to help move FOSS forward
+- improved Icecast2/Shoutcast2 streamer DJ credential compatibility;
+- combined Shoutcast DJ credential handling;
+- more reliable WebDJ authentication, reconnect and recorder cleanup;
+- traditional between-song jingles plus optional AutoDJ jingle overlays;
+- timed and scheduled jingle overlays;
+- automatic album artwork from local tags and external providers;
+- optional Spotify Client Credentials album-art lookup;
+- no-key iTunes Search artwork lookup;
+- MusicBrainz/Cover Art Archive fallback;
+- ISRC plus UPC/EAN/BARCODE metadata detection;
+- media API upload directly into selected playlists;
+- playlist listing for API-driven upload workflows;
+- native Icecast YP directory listing controls;
+- Shoutcast directory public host/port overrides;
+- Cloudflare Tunnel/reverse-proxy-friendly directory registration without exposing private radio ports;
+- a fork-specific updater that follows this repository's `main` branch;
+- GitHub Actions based multi-architecture GHCR image publishing.
 
-## Support AzuraCast Development
+Features will continue to evolve independently where doing so is useful for NekoSune Community deployments.
 
-AzuraCast will always be available free of charge, but if you find the software useful and would like to support the
-project's lead developer, visit our [Donate to AzuraCast page](https://donate.azuracast.com/). Your support is greatly
-appreciated.
+## Cloudflare Tunnel / Private Radio Ports
+
+This fork contains additional support for installations where Icecast/Shoutcast radio ports remain private and listeners reach them through a Cloudflare Tunnel or reverse proxy.
+
+For native radio directory registration, use a dedicated public radio hostname, for example:
+
+```text
+radio.example.com
+```
+
+with the tunnel forwarding directly to the private station frontend:
+
+```text
+radio.example.com -> http://127.0.0.1:8010
+```
+
+The directory can advertise the public hostname while the original radio port stays closed to the Internet.
+
+## Original AzuraCast
+
+AzuraCast is a full-featured, self-hosted web radio management suite distributed using Docker. For upstream documentation, architecture information and general AzuraCast usage, see:
+
+- [Official AzuraCast repository](https://github.com/AzuraCast/AzuraCast)
+- [Official documentation](https://www.azuracast.com/docs/)
+- [System requirements](https://www.azuracast.com/docs/getting-started/requirements/)
+- [Original installation documentation](https://www.azuracast.com/docs/getting-started/installation/)
+
+When using this fork, remember that fork-specific behaviour can differ from the official documentation.
+
+## Contributing to This Fork
+
+Bug fixes, compatibility improvements and feature contributions suitable for the NekoSune fork are welcome through this repository.
+
+Please make it clear whether a report applies to:
+
+- this NekoSune-maintained fork;
+- official/upstream AzuraCast;
+- or both.
+
+That distinction helps avoid confusing fork-specific changes with upstream behaviour.
+
+## License and Attribution
+
+This fork preserves the upstream project's **AGPL-3.0** licensing requirements.
+
+AzuraCast and its upstream contributors retain credit for their original work. Fork-specific modifications are maintained separately under this repository.
+
+See [LICENSE.md](LICENSE.md) for the full license.
+
+---
+
+**NekoSune AzuraCast Fork**  
+Community-maintained radio infrastructure, fixes and features.  
+**Loved by the NekoSune Community. 💚**
