@@ -106,6 +106,13 @@ final class StationFrontendConfiguration extends AbstractArrayEntity
         set => Types::stringOrNull($value, true);
     }
 
+    #[OA\Property(
+        description: 'Technical contact e-mail advertised to Icecast YP directories.'
+    )]
+    public ?string $directory_admin_email = null {
+        set => Types::stringOrNull($value, true);
+    }
+
     /**
      * @inheritDoc
      */
