@@ -37,6 +37,16 @@
                     {{ $gettext('Mount Name:') }}
                 </dt>
                 <dd><code>{{ connectionDjMountPoint }}</code></dd>
+
+                <dt class="mb-1">
+                    {{ $gettext('Username:') }}
+                </dt>
+                <dd><code>dj_username</code></dd>
+
+                <dt class="mb-1">
+                    {{ $gettext('Password:') }}
+                </dt>
+                <dd><code>dj_password</code></dd>
             </dl>
         </div>
         <div class="card-body">
@@ -70,9 +80,13 @@
                     {{ $gettext('Password:') }}
                 </dt>
                 <dd>
-                    <code>dj_username:dj_password</code>
-                    {{ $gettext('or') }}
+                    <code>dj_username:dj_password</code>,
                     <code>dj_username,dj_password</code>
+                    {{ $gettext('or') }}
+                    <code>dj_username;dj_password</code>
+                </dd>
+                <dd>
+                    {{ $gettext('Shoutcast source connections do not send a separate username, so enter the combined DJ username and password in the password field.') }}
                 </dd>
             </dl>
         </div>
