@@ -145,12 +145,24 @@ class Icecast extends AbstractFrontend
         $settingsBaseUrl = $this->settingsRepo->readSettings()->getBaseUrlAsUri();
         $baseUrl = $settingsBaseUrl ?? new Uri('http://localhost');
 
+        $directoryPublicUrl = $this->getDirectoryPublicUrl($station, $baseUrl);
+        $directoryHost = $directoryPublicUrl->getHost();
+        // The bundled Icecast YP client advertises HTTP URLs, so use port 80
+        // for a standard Cloudflare/reverse-proxy hostname unless the user
+        // explicitly supplied another public port.
+        $directoryPort = $directoryPublicUrl->getPort() ?? 80;
+
         [$certPath, $certKey] = Acme::getCertificatePaths();
 
         $config = [
             'location' => 'AzuraCast',
-            'admin' => 'icemaster@localhost',
-            'hostname' => $baseUrl->getHost(),
+            'admin' => $frontendConfig->directory_admin_email ?: 'icemaster@localhost',
+            'hostname' => $directoryHost,
+            // This top-level port is the address advertised to YP. The actual
+            // local listener remains on the private listen-socket below.
+            'port' => $frontendConfig->enable_public_directory
+                ? $directoryPort
+                : $frontendConfig->port,
             'limits' => [
                 'clients' => !empty($frontendConfig->max_listeners) ? $frontendConfig->max_listeners * 2 : 2500,
                 'max-listeners' => $frontendConfig->max_listeners ?? -1,
@@ -206,6 +218,15 @@ class Icecast extends AbstractFrontend
             ],
         ];
 
+        if ($frontendConfig->enable_public_directory) {
+            $ypUrl = $frontendConfig->icecast_yp_url ?: 'https://dir.xiph.org/cgi-bin/yp-cgi';
+
+            $config['directory'] = [
+                'yp-url-timeout' => 15,
+                'yp-url' => $ypUrl,
+            ];
+        }
+
         $bannedCountries = $frontendConfig->banned_countries ?? [];
         $allowedIps = $this->getIpsAsArray($frontendConfig->allowed_ips);
 
@@ -244,6 +265,10 @@ class Icecast extends AbstractFrontend
 
             if (!$mountRow->is_visible_on_public_pages) {
                 $mount['hidden'] = 1;
+            } elseif ($frontendConfig->enable_public_directory) {
+                // Force public directory publishing even when the source client
+                // does not explicitly provide Ice-Public: 1.
+                $mount['public'] = 1;
             }
 
             if (!empty($mountRow->intro_path)) {
