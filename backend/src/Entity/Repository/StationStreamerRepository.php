@@ -65,17 +65,23 @@ final class StationStreamerRepository extends AbstractStationBasedRepository
         string $username = '',
         bool $activeOnly = true
     ): ?StationStreamer {
-        $criteria = [
-            'station' => $station,
-            'streamer_username' => $username,
-        ];
+        $username = trim($username);
+
+        $qb = $this->em->createQueryBuilder()
+            ->select('streamer')
+            ->from(StationStreamer::class, 'streamer')
+            ->andWhere('streamer.station = :station')
+            ->andWhere('LOWER(streamer.streamer_username) = LOWER(:username)')
+            ->setParameter('station', $station)
+            ->setParameter('username', $username)
+            ->setMaxResults(1);
 
         if ($activeOnly) {
-            $criteria['is_active'] = 1;
+            $qb->andWhere('streamer.is_active = 1');
         }
 
         /** @var StationStreamer|null $streamer */
-        $streamer = $this->repository->findOneBy($criteria);
+        $streamer = $qb->getQuery()->getOneOrNullResult();
 
         return $streamer;
     }

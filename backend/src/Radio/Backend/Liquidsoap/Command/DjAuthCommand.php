@@ -45,13 +45,61 @@ final class DjAuthCommand extends AbstractCommand
         $streamer = $this->streamerRepo->getStreamer($station, $user);
 
         if (null === $streamer) {
+            $inactiveStreamer = $this->streamerRepo->getStreamer($station, $user, false);
+
+            $this->logger->warning(
+                null === $inactiveStreamer
+                    ? 'DJ authentication rejected: streamer username was not found.'
+                    : 'DJ authentication rejected: streamer account is inactive.',
+                [
+                    'username' => $user,
+                ]
+            );
+
             return [
                 'allow' => false,
             ];
         }
 
+        if (!$streamer->authenticate($pass)) {
+            $this->logger->warning(
+                'DJ authentication rejected: password did not match.',
+                [
+                    'username' => $streamer->streamer_username,
+                ]
+            );
+
+            return [
+                'allow' => false,
+                'username' => $streamer->streamer_username,
+                'display_name' => $streamer->display_name,
+            ];
+        }
+
+        if (!$this->scheduler->canStreamerStreamNow($streamer)) {
+            $this->logger->warning(
+                'DJ authentication rejected: streamer is outside the allowed schedule.',
+                [
+                    'username' => $streamer->streamer_username,
+                ]
+            );
+
+            return [
+                'allow' => false,
+                'username' => $streamer->streamer_username,
+                'display_name' => $streamer->display_name,
+            ];
+        }
+
+        $this->logger->info(
+            'DJ authentication accepted.',
+            [
+                'username' => $streamer->streamer_username,
+            ]
+        );
+
         return [
-            'allow' => $streamer->authenticate($pass) && $this->scheduler->canStreamerStreamNow($streamer),
+            'allow' => true,
             'username' => $streamer->streamer_username,
             'display_name' => $streamer->display_name,
         ];
