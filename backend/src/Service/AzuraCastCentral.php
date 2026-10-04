@@ -30,7 +30,7 @@ final class AzuraCastCentral
     }
 
     public const string FORK_REPOSITORY = 'NekoSuneProjectsForks/AzuraCast';
-    public const string FORK_BRANCH = 'main';
+    public const string FORK_BRANCH = 'modern';
     private const string GITHUB_API_URL = 'https://api.github.com/repos/' . self::FORK_REPOSITORY;
 
     /**
