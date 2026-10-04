@@ -1,7 +1,7 @@
 services:
   installer:
     container_name: azuracast_installer
-    image: 'ghcr.io/azuracast/azuracast:${AZURACAST_VERSION:-latest}'
+    image: 'ghcr.io/nekosuneprojectsforks/azuracast:${AZURACAST_VERSION:-main}'
     volumes:
       - './:/installer'
     restart: 'no'
