@@ -41,6 +41,8 @@ type Form = Required<
         | "use_external_album_art_in_apis"
         | "use_external_album_art_when_processing_media"
         | "last_fm_api_key"
+        | "spotify_client_id"
+        | "spotify_client_secret"
     >
 >;
 
@@ -76,6 +78,8 @@ export const useAdminSettingsForm = defineStore("form-admin-settings", () => {
         use_external_album_art_in_apis: false,
         use_external_album_art_when_processing_media: false,
         last_fm_api_key: "",
+        spotify_client_id: "",
+        spotify_client_secret: "",
     });
 
     const { r$ } = useAppRegle(
@@ -118,6 +122,8 @@ export const useAdminSettingsForm = defineStore("form-admin-settings", () => {
                     fields.use_external_album_art_in_apis,
                     fields.use_external_album_art_when_processing_media,
                     fields.last_fm_api_key,
+                    fields.spotify_client_id,
+                    fields.spotify_client_secret,
                 ],
                 debuggingTab: [fields.sync_disabled],
             }),

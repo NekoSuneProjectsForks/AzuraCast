@@ -119,6 +119,7 @@ class StationMedia
         $media->album = $row['album'];
         $media->genre = $row['genre'];
         $media->isrc = $row['isrc'];
+        $media->upc = $row['upc'] ?? null;
         $media->lyrics = $row['lyrics'] ?? null;
 
         $media->length = Types::int($row['length']);

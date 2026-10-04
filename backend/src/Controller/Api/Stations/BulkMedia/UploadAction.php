@@ -77,6 +77,7 @@ final class UploadAction implements SingleActionInterface
         'genre',
         'lyrics',
         'isrc',
+        'upc',
     ];
 
     public function __construct(
@@ -113,7 +114,7 @@ final class UploadAction implements SingleActionInterface
         $mediaInStorageLocation = $this->em->createQuery(
             <<<DQL
             SELECT sm.id, sm.unique_id, sm.path, sm.title, sm.artist,
-                   sm.album, sm.genre, sm.lyrics, sm.isrc, sm.extra_metadata_raw
+                   sm.album, sm.genre, sm.lyrics, sm.isrc, sm.upc, sm.extra_metadata_raw
             FROM App\Entity\StationMedia sm
             WHERE sm.storage_location = :storageLocation
             DQL

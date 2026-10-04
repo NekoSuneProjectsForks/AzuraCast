@@ -321,6 +321,33 @@ final class FilesController extends AbstractStationApiCrudController
             $tempPath
         );
 
+        if ($record instanceof StationMedia && !empty($apiRecord->playlists)) {
+            $playlistsToAssign = [];
+            foreach ($apiRecord->playlists as $playlistId) {
+                $playlistId = (int)$playlistId;
+                if ($playlistId > 0) {
+                    $playlistsToAssign[$playlistId] = 0;
+                }
+            }
+
+            if (!empty($playlistsToAssign)) {
+                $affectedPlaylistIds = $this->playlistMediaRepo->setPlaylistsForMedia(
+                    $record,
+                    $station,
+                    $playlistsToAssign
+                );
+
+                $backend = $this->adapters->getBackendAdapter($station);
+                if ($backend instanceof Liquidsoap) {
+                    foreach ($affectedPlaylistIds as $playlistId => $playlistRow) {
+                        $message = new WritePlaylistFileMessage();
+                        $message->playlist_id = $playlistId;
+                        $this->messageBus->dispatch($message);
+                    }
+                }
+            }
+        }
+
         $return = (null !== $record)
             ? $this->viewRecord($record, $request)
             : Status::success();

@@ -42,6 +42,7 @@ final class StationPlaylist implements
     public const string OPTION_INTERRUPT_OTHER_SONGS = 'interrupt';
     public const string OPTION_PLAY_SINGLE_TRACK = 'single_track';
     public const string OPTION_MERGE = 'merge';
+    public const string OPTION_JINGLE_OVERLAY = 'jingle_overlay';
 
     #[
         ORM\ManyToOne(inversedBy: 'playlists'),
@@ -218,6 +219,12 @@ final class StationPlaylist implements
     public function backendPlaySingleTrack(): bool
     {
         return in_array(self::OPTION_PLAY_SINGLE_TRACK, $this->backend_options, true);
+    }
+
+    public function backendOverlayJingle(): bool
+    {
+        return $this->is_jingle
+            && in_array(self::OPTION_JINGLE_OVERLAY, $this->backend_options, true);
     }
 
     #[

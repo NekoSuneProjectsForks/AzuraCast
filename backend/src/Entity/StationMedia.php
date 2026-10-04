@@ -59,6 +59,11 @@ final class StationMedia implements
         set => $this->truncateNullableString($value, 15);
     }
 
+    #[ORM\Column(length: 20, nullable: true)]
+    public ?string $upc = null {
+        set => $this->truncateNullableString($value, 20);
+    }
+
     #[ORM\Column(type: 'float', nullable: false)]
     public float $length = 0.0;
 
@@ -190,6 +195,9 @@ final class StationMedia implements
         }
         if (isset($tags['isrc'])) {
             $this->isrc = Types::stringOrNull($tags['isrc']);
+        }
+        if (isset($tags['upc'])) {
+            $this->upc = Types::stringOrNull($tags['upc']);
         }
 
         $this->extra_metadata = $metadata->getExtraTags();

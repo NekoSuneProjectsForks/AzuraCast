@@ -228,6 +228,7 @@
                 v-if="!isConnected"
                 type="button"
                 class="btn btn-success"
+                :disabled="isConnecting || !canConnect"
                 @click="startStream(djUsername, djPassword)"
             >
                 {{ langStreamButton }}
@@ -272,13 +273,24 @@ const djPassword = ref<string | null>(null);
 const { doPassThrough, bitrate, sampleRate, startStream, stopStream } =
     useInjectWebDjNode();
 
-const { metadata, sendMetadata, isConnected } = useInjectWebcaster();
+const { metadata, sendMetadata, isConnected, isConnecting } =
+    useInjectWebcaster();
 
 usePassthroughSync(doPassThrough, "global");
 
 const { $gettext } = useTranslate();
 
+const canConnect = computed(
+    () =>
+        (djUsername.value?.trim().length ?? 0) > 0 &&
+        (djPassword.value?.length ?? 0) > 0,
+);
+
 const langStreamButton = computed(() => {
+    if (isConnecting.value) {
+        return $gettext("Connecting...");
+    }
+
     return isConnected.value
         ? $gettext("Stop Streaming")
         : $gettext("Start Streaming");

@@ -15,6 +15,7 @@ enum MetadataTags: string
     case EncodedBy = 'encoded_by'; // TEN, TENC
     case Genre = 'genre'; // TCO, TCON
     case Isrc = 'isrc'; // TRC, TSRC
+    case Upc = 'upc'; // Commonly BARCODE/UPC in Vorbis comments or TXXX frames
     case Title = 'title'; // TIT2, TT2
     case Year = 'year'; // TYE, TYER
 
@@ -103,6 +104,7 @@ enum MetadataTags: string
             self::InternetRadioStationOwner->value => __('Internet Radio Station Owner'), // TRSO
             self::InvolvedPeopleList->value => __('Involved People List'), // IPL, IPLS, TIPL
             self::Isrc->value => __('ISRC'),
+            self::Upc->value => __('UPC / Barcode'),
             self::Language->value => __('Language'), // TLA, TLAN
             self::Length->value => __('Length'), // TLE, TLEN
             self::LinkedInformation->value => __('Linked Information'), // LINK, LNK
@@ -158,6 +160,10 @@ enum MetadataTags: string
             'date' => self::Year,
             'encoder' => self::EncodedBy,
             'website' => self::UrlArtist,
+            'barcode' => self::Upc,
+            'ean' => self::Upc,
+            'ean13' => self::Upc,
+            'upc_code' => self::Upc,
         ];
 
         return $aliases[$value] ?? null;

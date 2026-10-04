@@ -15,7 +15,7 @@ name: azuracast
 services:
   web:
     container_name: azuracast
-    image: "ghcr.io/azuracast/azuracast:${AZURACAST_VERSION:-latest}"
+    image: "ghcr.io/nekosuneprojectsforks/azuracast:${AZURACAST_VERSION:-modern}"
     labels:
       - "com.centurylinklabs.watchtower.scope=azuracast"
     # Want to customize the HTTP/S ports? Follow the instructions here:
@@ -197,7 +197,7 @@ services:
 
   updater:
     container_name: azuracast_updater
-    image: ghcr.io/azuracast/updater:latest
+    image: ghcr.io/nekosuneprojectsforks/azuracast-updater:latest
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

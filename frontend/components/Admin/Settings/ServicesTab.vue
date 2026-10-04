@@ -245,6 +245,35 @@
                         </a>
                     </template>
                 </form-group-field>
+
+                <form-markup
+                    id="album_art_no_key_services"
+                    class="col-md-12"
+                    :label="$gettext('Automatic No-Key Album Art Services')"
+                >
+                    <p class="card-text">
+                        {{ $gettext('iTunes Search and MusicBrainz/Cover Art Archive are checked automatically and do not require an API key. UPC and ISRC metadata are used when available for more accurate matching.') }}
+                    </p>
+                </form-markup>
+
+                <form-group-field
+                    id="edit_form_spotify_client_id"
+                    class="col-md-6"
+                    :field="r$.spotify_client_id"
+                    :label="$gettext('Spotify Client ID (Optional)')"
+                />
+
+                <form-group-field
+                    id="edit_form_spotify_client_secret"
+                    class="col-md-6"
+                    :field="r$.spotify_client_secret"
+                    input-type="password"
+                    :label="$gettext('Spotify Client Secret (Optional)')"
+                >
+                    <template #description>
+                        {{ $gettext('Used with Spotify Client Credentials for server-side catalog matching. Leave both Spotify fields blank to use only no-key providers.') }}
+                    </template>
+                </form-group-field>
             </div>
         </form-fieldset>
     </tab>

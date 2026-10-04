@@ -33,31 +33,42 @@ const tabClass = useFormTabClass(computed(() => r$.value.$groups.advancedTab));
 
 const { $gettext } = useTranslate();
 
-const backendOptions = computed(() =>
-    form.value.source === PlaylistSources.Playlists
-        ? [
-              {
-                  value: "merge",
-                  text: $gettext(
-                      "Play the group's entire rotation as a single block.",
-                  ),
-              },
-          ]
-        : [
-              {
-                  value: "interrupt",
-                  text: $gettext(
-                      "Interrupt other songs to play at scheduled time.",
-                  ),
-              },
-              {
-                  value: "single_track",
-                  text: $gettext("Only play one track at scheduled time."),
-              },
-              {
-                  value: "merge",
-                  text: $gettext("Merge playlist to play as a single track."),
-              },
-          ],
-);
+const backendOptions = computed(() => {
+    if (form.value.source === PlaylistSources.Playlists) {
+        return [
+            {
+                value: "merge",
+                text: $gettext(
+                    "Play the group's entire rotation as a single block.",
+                ),
+            },
+        ];
+    }
+
+    const options = [
+        {
+            value: "interrupt",
+            text: $gettext("Interrupt other songs to play at scheduled time."),
+        },
+        {
+            value: "single_track",
+            text: $gettext("Only play one track at scheduled time."),
+        },
+        {
+            value: "merge",
+            text: $gettext("Merge playlist to play as a single track."),
+        },
+    ];
+
+    if (form.value.is_jingle) {
+        options.push({
+            value: "jingle_overlay",
+            text: $gettext(
+                "Overlay jingles on top of the currently playing AutoDJ music instead of replacing it. Best used with Once per X Minutes, Once per Hour, or a schedule.",
+            ),
+        });
+    }
+
+    return options;
+});
 </script>

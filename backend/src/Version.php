@@ -157,7 +157,7 @@ final class Version
 
         if (ReleaseChannel::RollingRelease === $releaseChannel) {
             if ($asHtml) {
-                $commitLink = 'https://github.com/AzuraCast/AzuraCast/commit/' . $details['commit'];
+                $commitLink = 'https://github.com/NekoSuneProjectsForks/AzuraCast/commit/' . $details['commit'];
                 $commitText = sprintf(
                     '#<a href="%s" target="_blank">%s</a> (%s)',
                     $commitLink,
@@ -172,10 +172,10 @@ final class Version
                 );
             }
 
-            return 'Rolling Release ' . $commitText;
+            return 'NekoSune Modern ' . $commitText;
         }
 
-        return 'v' . self::STABLE_VERSION . ' Stable';
+        return 'NekoSune Fork v' . self::STABLE_VERSION;
     }
 
     /**

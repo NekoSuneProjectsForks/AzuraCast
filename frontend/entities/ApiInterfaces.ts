@@ -1764,6 +1764,11 @@ export interface ApiHasSongFields {
      */
     isrc?: string | null;
     /**
+     * The UPC/EAN barcode associated with the release, when present in media tags.
+     * @example "720642462928"
+     */
+    upc?: string | null;
+    /**
      * Lyrics to the song.
      * @example ""
      */
@@ -1781,6 +1786,11 @@ export interface ApiUploadFile {
      * @example ""
      */
     file: string;
+    /**
+     * Optional playlist IDs to assign the uploaded media to immediately.
+     * @example [1,2]
+     */
+    playlists?: number[];
 }
 
 export interface ApiUploadedRecordStatus {
@@ -2177,6 +2187,10 @@ export interface Settings {
      * @example "SAMPLE-API-KEY"
      */
     last_fm_api_key?: string | null;
+    /** Spotify Web API client ID for optional album art lookup. */
+    spotify_client_id?: string | null;
+    /** Spotify Web API client secret for optional album art lookup. */
+    spotify_client_secret?: string | null;
     /**
      * Hide AzuraCast Branding on Public Pages
      * @example "false"
@@ -2537,6 +2551,16 @@ export interface StationFrontendConfiguration {
     allowed_ips?: string | null;
     sc_license_id?: string | null;
     sc_user_id?: string | null;
+    /** Publish this station to the native Icecast/Shoutcast directory when supported. */
+    enable_public_directory?: boolean;
+    /**
+     * Public root URL advertised to radio directories. Intended for NAT, reverse proxies and Cloudflare Tunnel.
+     */
+    public_directory_url?: string | null;
+    /** Icecast YP directory endpoint. Defaults to the Xiph directory. */
+    icecast_yp_url?: string | null;
+    /** Technical contact e-mail advertised to Icecast YP directories. */
+    directory_admin_email?: string | null;
 }
 
 export type StationHlsStream = HasAutoIncrementId & {

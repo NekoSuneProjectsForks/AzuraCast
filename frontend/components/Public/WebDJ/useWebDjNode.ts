@@ -89,26 +89,46 @@ export const [useProvideWebDjNode, useInjectWebDjNode] =
             return streamNode;
         });
 
-        let mediaRecorder: MediaRecorder;
+        let mediaRecorder: MediaRecorder | null = null;
 
-        const startStream = (
+        const startStream = async (
             username: string | null = null,
             password: string | null = null,
         ) => {
-            void context.value.resume();
+            await context.value.resume();
 
-            mediaRecorder = new MediaRecorder(streamNode.value.stream, {
+            if (mediaRecorder?.state === "recording") {
+                mediaRecorder.stop();
+            }
+
+            const recorder = new MediaRecorder(streamNode.value.stream, {
                 mimeType: "audio/webm;codecs=opus",
                 audioBitsPerSecond: bitrate.value * 1000,
             });
+            mediaRecorder = recorder;
 
-            connectSocket(mediaRecorder, username, password);
+            try {
+                // Authenticate the WebSocket first. Starting the recorder before
+                // Liquidsoap accepts the DJ credentials can leave a stale
+                // recorder/socket pair behind after a rejected login.
+                await connectSocket(recorder, username, password);
+                recorder.start(1000);
+            } catch {
+                if (recorder.state !== "inactive") {
+                    recorder.stop();
+                }
 
-            mediaRecorder.start(1000);
+                if (mediaRecorder === recorder) {
+                    mediaRecorder = null;
+                }
+            }
         };
 
         const stopStream = () => {
-            mediaRecorder?.stop();
+            if (mediaRecorder?.state !== "inactive") {
+                mediaRecorder?.stop();
+            }
+            mediaRecorder = null;
         };
 
         return {

@@ -12,6 +12,7 @@ use App\Http\Router;
 use App\Nginx\CustomUrls;
 use App\Radio\AbstractLocalAdapter;
 use App\Radio\Configuration;
+use App\Utilities\Urls;
 use App\Xml\Reader;
 use Exception;
 use GuzzleHttp\Client;
@@ -93,6 +94,32 @@ abstract class AbstractFrontend extends AbstractLocalAdapter
         return $baseUrl
             ->withPort($radioPort)
             ->withPath('');
+    }
+
+    public function getDirectoryPublicUrl(
+        Station $station,
+        ?UriInterface $baseUrl = null
+    ): UriInterface {
+        $configuredUrl = $station->frontend_config->public_directory_url;
+        if (!empty($configuredUrl)) {
+            $configuredUri = Urls::tryParseUserUrl(
+                $configuredUrl,
+                'Public Directory URL',
+                false
+            );
+
+            if (null !== $configuredUri) {
+                // Native Icecast/Shoutcast directories advertise host/port +
+                // mount paths; they cannot preserve AzuraCast's /listen/... web
+                // proxy prefix. Always use the configured station hostname root.
+                return $configuredUri
+                    ->withQuery('')
+                    ->withFragment('')
+                    ->withPath('');
+            }
+        }
+
+        return $this->getPublicUrl($station, $baseUrl);
     }
 
     abstract public function getAdminUrl(Station $station, ?UriInterface $baseUrl = null): UriInterface;

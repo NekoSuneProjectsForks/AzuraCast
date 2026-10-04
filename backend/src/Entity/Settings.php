@@ -296,6 +296,25 @@ final class Settings implements Stringable
     }
 
     #[
+        OA\Property(description: "Spotify Web API client ID for optional album art lookup."),
+        ORM\Column(length: 255, nullable: true),
+        Serializer\Groups(self::GROUP_GENERAL)
+    ]
+    public ?string $spotify_client_id = null {
+        set => $this->truncateNullableString($value, 255, true);
+    }
+
+    #[
+        OA\Property(description: "Spotify Web API client secret for optional album art lookup."),
+        ORM\Column(length: 255, nullable: true),
+        Serializer\Groups(self::GROUP_GENERAL),
+        Attributes\AuditIgnore
+    ]
+    public ?string $spotify_client_secret = null {
+        set => $this->truncateNullableString($value, 255, true);
+    }
+
+    #[
         OA\Property(description: "Hide AzuraCast Branding on Public Pages", example: "false"),
         ORM\Column,
         Serializer\Groups(self::GROUP_BRANDING)
