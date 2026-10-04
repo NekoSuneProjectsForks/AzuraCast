@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - main
+      - modern
   push:
     paths-ignore:
       - '*.md'
@@ -14,6 +15,7 @@ on:
     branches:
       - ci-testing
       - main
+      - modern
       - stable
       - 'dev-*'
     tags:
@@ -222,6 +224,7 @@ jobs:
           tags: |
             type=raw,value=main,enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=modern,enable=${{ github.ref == 'refs/heads/modern' }}
             type=ref,event=branch
             type=sha,prefix=sha-
 
