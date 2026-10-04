@@ -13,6 +13,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use RuntimeException;
+use Throwable;
 
 final class AzuraCastCentral
 {
