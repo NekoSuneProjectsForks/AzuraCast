@@ -21,13 +21,48 @@ export const [useProvideWebcaster, useInjectWebcaster] =
 
         const metadata = shallowRef<WebcasterMetadata | null>(null);
         const isConnected = ref(false);
+        const isConnecting = ref(false);
 
-        let socket: WebSocket;
+        let socket: WebSocket | null = null;
+        let connectAttempt = 0;
+        let successTimer: ReturnType<typeof setTimeout> | null = null;
+
+        const clearSuccessTimer = () => {
+            if (successTimer !== null) {
+                clearTimeout(successTimer);
+                successTimer = null;
+            }
+        };
+
+        const closeSocket = () => {
+            clearSuccessTimer();
+
+            if (socket !== null) {
+                socket.onopen = null;
+                socket.onerror = null;
+                socket.onclose = null;
+
+                if (
+                    socket.readyState === WebSocket.OPEN ||
+                    socket.readyState === WebSocket.CONNECTING
+                ) {
+                    socket.close();
+                }
+
+                socket = null;
+            }
+
+            isConnected.value = false;
+            isConnecting.value = false;
+        };
 
         const sendMetadata = (data: WebcasterMetadata) => {
             metadata.value = data;
 
-            if (isConnected.value && socket) {
+            if (
+                isConnected.value &&
+                socket?.readyState === WebSocket.OPEN
+            ) {
                 socket.send(
                     JSON.stringify({
                         type: "metadata",
@@ -41,77 +76,133 @@ export const [useProvideWebcaster, useInjectWebcaster] =
             mediaRecorder: MediaRecorder,
             username: string | null = null,
             password: string | null = null,
-        ) => {
-            socket = new WebSocket(baseUri, "webcast");
+        ): Promise<void> => {
+            closeSocket();
 
-            const hello: {
-                [key: string]: any;
-            } = {
-                mime: mediaRecorder.mimeType,
-            };
+            const attempt = ++connectAttempt;
+            isConnecting.value = true;
 
-            if (null !== username) {
-                hello.user = username;
-            }
-            if (null !== password) {
-                hello.password = password;
-            }
+            return new Promise((resolve, reject) => {
+                const activeSocket = new WebSocket(baseUri, "webcast");
+                socket = activeSocket;
 
-            socket.onopen = () => {
-                socket.send(
-                    JSON.stringify({
-                        type: "hello",
-                        data: hello,
-                    }),
-                );
+                const cleanUsername = username?.trim() || null;
+                const cleanPassword = password || null;
 
-                isConnected.value = true;
+                const hello: {
+                    [key: string]: any;
+                } = {
+                    mime: mediaRecorder.mimeType,
+                };
 
-                // Timeout as Liquidsoap won't return any success/failure message, so the only
-                // way we know if we're still connected is to set a timer.
-                setTimeout(() => {
-                    if (isConnected.value) {
+                if (cleanUsername !== null) {
+                    hello.user = cleanUsername;
+                }
+                if (cleanPassword !== null) {
+                    hello.password = cleanPassword;
+                }
+
+                let settled = false;
+
+                const rejectConnection = (message: string) => {
+                    if (settled || attempt !== connectAttempt) {
+                        return;
+                    }
+
+                    settled = true;
+                    clearSuccessTimer();
+                    isConnected.value = false;
+                    isConnecting.value = false;
+                    notifyError(message);
+                    reject(new Error(message));
+                };
+
+                activeSocket.onopen = () => {
+                    if (attempt !== connectAttempt) {
+                        activeSocket.close();
+                        return;
+                    }
+
+                    activeSocket.send(
+                        JSON.stringify({
+                            type: "hello",
+                            data: hello,
+                        }),
+                    );
+
+                    // Liquidsoap does not send a positive auth acknowledgement.
+                    // Invalid credentials close the socket shortly after the hello
+                    // frame, so only mark WebDJ as connected after the socket has
+                    // remained open long enough for authentication to complete.
+                    successTimer = setTimeout(() => {
+                        successTimer = null;
+
+                        if (
+                            attempt !== connectAttempt ||
+                            activeSocket.readyState !== WebSocket.OPEN
+                        ) {
+                            rejectConnection(
+                                $gettext(
+                                    "Web DJ could not authenticate with the server.",
+                                ),
+                            );
+                            return;
+                        }
+
+                        settled = true;
+                        isConnecting.value = false;
+                        isConnected.value = true;
+
                         notifySuccess($gettext("Web DJ connected!"));
 
                         if (metadata.value !== null) {
-                            socket.send(
+                            activeSocket.send(
                                 JSON.stringify({
                                     type: "metadata",
                                     data: metadata.value,
                                 }),
                             );
                         }
+
+                        resolve();
+                    }, 1500);
+                };
+
+                activeSocket.onerror = () => {
+                    rejectConnection(
+                        $gettext(
+                            "An error occurred while connecting Web DJ to the server.",
+                        ),
+                    );
+                };
+
+                activeSocket.onclose = () => {
+                    if (attempt !== connectAttempt) {
+                        return;
                     }
-                }, 1000);
-            };
 
-            socket.onerror = () => {
-                notifyError(
-                    $gettext("An error occurred with the Web DJ socket."),
-                );
-            };
+                    const wasConnecting = isConnecting.value;
 
-            socket.onclose = () => {
-                isConnected.value = false;
-            };
+                    clearSuccessTimer();
+                    isConnected.value = false;
+                    isConnecting.value = false;
 
-            mediaRecorder.ondataavailable = async (e: BlobEvent) => {
-                const data = await e.data.arrayBuffer();
-                if (isConnected.value) {
-                    socket.send(data);
-                }
-            };
-
-            mediaRecorder.onstop = () => {
-                if (isConnected.value) {
-                    socket.close();
-                }
-            };
+                    if (wasConnecting) {
+                        rejectConnection(
+                            $gettext(
+                                "Web DJ connection was rejected. Check the DJ username, password and station streamer settings.",
+                            ),
+                        );
+                    }
+                };
+            });
         };
 
         return {
             isConnected,
+            isConnecting,
             connect,
+            closeSocket,
             metadata,
             sendMetadata,
         };
