@@ -71,6 +71,16 @@
                         :label="$gettext('Icecast YP Directory Endpoint')"
                         :description="$gettext('Defaults to the public Xiph/Icecast directory. You may use another Icecast-compatible YP endpoint.')"
                     />
+
+                    <form-group-field
+                        v-if="form.frontend_config.enable_public_directory && !isShoutcastFrontend"
+                        id="edit_form_directory_admin_email"
+                        class="col-md-12"
+                        :field="r$.frontend_config.directory_admin_email"
+                        input-type="email"
+                        :label="$gettext('Icecast Directory Contact E-mail')"
+                        :description="$gettext('Public Icecast directories expect a valid technical contact e-mail for listed servers.')"
+                    />
                 </div>
             </form-fieldset>
 
