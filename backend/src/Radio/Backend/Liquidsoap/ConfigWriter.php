@@ -207,6 +207,7 @@ final class ConfigWriter implements EventSubscriberInterface
         $scheduleSwitches = [];
         $scheduleSwitchesInterrupting = [];
         $scheduleSwitchesRemoteUrl = [];
+        $jingleOverlays = [];
 
         $fallbackRemoteUrl = null;
 
@@ -300,6 +301,49 @@ final class ConfigWriter implements EventSubscriberInterface
             }
 
             $event->appendLines($playlistConfigLines);
+
+            if ($playlist->backendOverlayJingle()) {
+                $overlaySource = null;
+
+                if (PlaylistTypes::OncePerXMinutes === $playlist->type && $playlist->play_per_minutes > 0) {
+                    $delaySeconds = $playlist->play_per_minutes * 60;
+                    $overlaySource = sprintf(
+                        'delay(initial=true, %d., %s)',
+                        $delaySeconds,
+                        $playlistVarName
+                    );
+                } elseif (PlaylistTypes::OncePerHour === $playlist->type) {
+                    $minutePlayTime = $playlist->play_per_hour_minute . 'm';
+                    $overlaySource = sprintf(
+                        'source.available(%s, predicate.activates({%s}))',
+                        $playlistVarName,
+                        $minutePlayTime
+                    );
+                } elseif ($scheduleItems->count() > 0) {
+                    $overlayPredicates = [];
+                    foreach ($scheduleItems as $scheduleItem) {
+                        $playTime = $this->getScheduledPlaylistPlayTime($event, $scheduleItem);
+                        $overlayPredicates[] = 'predicate.activates({' . $playTime . '})';
+                    }
+
+                    if (!empty($overlayPredicates)) {
+                        $overlayPredicate = count($overlayPredicates) === 1
+                            ? $overlayPredicates[0]
+                            : 'predicate.or([' . implode(', ', $overlayPredicates) . '])';
+
+                        $overlaySource = sprintf(
+                            'source.available(%s, %s)',
+                            $playlistVarName,
+                            $overlayPredicate
+                        );
+                    }
+                }
+
+                if (null !== $overlaySource) {
+                    $jingleOverlays[] = $overlaySource;
+                    continue;
+                }
+            }
 
             // Playlists that are members of groups are only switched in Liquidsoap when they
             // are scheduled since groups cannot be expressed in Liquidsoap
@@ -480,6 +524,16 @@ final class ConfigWriter implements EventSubscriberInterface
             radio = fallback(id="interrupting_fallback", track_sensitive = false, [interrupting_queue, radio])
             LIQ
         );
+
+        if (!empty($jingleOverlays)) {
+            $event->appendLines(['# Jingle Overlays']);
+            foreach ($jingleOverlays as $index => $jingleOverlay) {
+                $event->appendLines([
+                    sprintf('jingle_overlay_%d = %s', $index + 1, $jingleOverlay),
+                    sprintf('radio = add(normalize=false, [radio, jingle_overlay_%d])', $index + 1),
+                ]);
+            }
+        }
 
         if (!empty($scheduleSwitchesRemoteUrl)) {
             $event->appendLines(['# Remote URL Schedule Switches']);
