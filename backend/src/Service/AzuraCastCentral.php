@@ -28,56 +28,92 @@ final class AzuraCastCentral
     ) {
     }
 
+    public const string FORK_REPOSITORY = 'NekoSuneProjectsForks/AzuraCast';
+    public const string FORK_BRANCH = 'main';
+    private const string GITHUB_API_URL = 'https://api.github.com/repos/' . self::FORK_REPOSITORY;
+
     /**
-     * Ping the AzuraCast Central server for updates and return them if there are any.
+     * Check this maintained fork's main branch directly on GitHub.
+     *
+     * Fork installations intentionally do not use the upstream AzuraCast
+     * Central service for update decisions, otherwise a modified installation
+     * can be pointed back toward upstream images/releases.
      */
     public function checkForUpdates(): UpdateDetails
     {
-        $requestBody = [
-            'id' => $this->getUniqueIdentifier(),
-            'is_docker' => $this->environment->isDocker(),
-            'environment' => $this->environment->getAppEnvironmentEnum()->value,
-            'release_channel' => $this->version->getReleaseChannelEnum()->value,
+        $headers = [
+            'Accept' => 'application/vnd.github+json',
+            'X-GitHub-Api-Version' => '2022-11-28',
+            'User-Agent' => 'NekoSune-AzuraCast-Fork',
         ];
 
-        $commitHash = $this->version->getCommitHash();
-        if ($commitHash) {
-            $requestBody['version'] = $commitHash;
-        } else {
-            $requestBody['release'] = Version::STABLE_VERSION;
-        }
-
-        $this->logger->debug(
-            'Update request body',
-            [
-                'body' => $requestBody,
-            ]
-        );
-
-        $response = $this->httpClient->request(
-            'POST',
-            self::BASE_URL . '/api/update',
+        $latestResponse = $this->httpClient->request(
+            'GET',
+            self::GITHUB_API_URL . '/commits/' . self::FORK_BRANCH,
             [
                 RequestOptions::HTTP_ERRORS => true,
-                RequestOptions::JSON => $requestBody,
                 RequestOptions::TIMEOUT => 15,
+                RequestOptions::HEADERS => $headers,
             ]
         );
 
-        $updateDataRaw = $response->getBody()->getContents();
+        $latestData = json_decode(
+            $latestResponse->getBody()->getContents(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
 
-        $this->logger->debug('Update response body.', [
-            'response' => $updateDataRaw,
-        ]);
-
-        $updateData = json_decode($updateDataRaw, true, 512, JSON_THROW_ON_ERROR);
-        $updates = $updateData['updates'] ?? null;
-
-        if (empty($updates)) {
-            throw new RuntimeException('Central server did not send update information.');
+        $latestCommit = $latestData['sha'] ?? null;
+        if (!is_string($latestCommit) || '' === $latestCommit) {
+            throw new RuntimeException('GitHub did not return the latest fork commit.');
         }
 
-        return UpdateDetails::fromArray($updates);
+        $currentCommit = $this->version->getCommitHash();
+        $needsUpdate = null !== $currentCommit && $currentCommit !== $latestCommit;
+        $commitsBehind = $needsUpdate ? 1 : 0;
+
+        if ($needsUpdate) {
+            try {
+                $compareResponse = $this->httpClient->request(
+                    'GET',
+                    self::GITHUB_API_URL . '/compare/' . rawurlencode($currentCommit) . '...' . self::FORK_BRANCH,
+                    [
+                        RequestOptions::HTTP_ERRORS => true,
+                        RequestOptions::TIMEOUT => 15,
+                        RequestOptions::HEADERS => $headers,
+                    ]
+                );
+
+                $compareData = json_decode(
+                    $compareResponse->getBody()->getContents(),
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+
+                $commitsBehind = max(
+                    1,
+                    (int)($compareData['ahead_by'] ?? $compareData['total_commits'] ?? 1)
+                );
+            } catch (Throwable $e) {
+                $this->logger->debug(
+                    'Could not calculate exact fork update distance.',
+                    ['exception' => $e]
+                );
+            }
+        }
+
+        return new UpdateDetails(
+            current_release: null !== $currentCommit
+                ? substr($currentCommit, 0, 7)
+                : 'unknown',
+            latest_release: substr($latestCommit, 0, 7),
+            needs_rolling_update: $needsUpdate,
+            needs_release_update: $needsUpdate,
+            rolling_updates_available: $commitsBehind,
+            can_switch_to_stable: false
+        );
     }
 
     public function getUniqueIdentifier(): string
