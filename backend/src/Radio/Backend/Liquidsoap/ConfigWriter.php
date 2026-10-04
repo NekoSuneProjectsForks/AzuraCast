@@ -315,7 +315,7 @@ final class ConfigWriter implements EventSubscriberInterface
                 } elseif (PlaylistTypes::OncePerHour === $playlist->type) {
                     $minutePlayTime = $playlist->play_per_hour_minute . 'm';
                     $overlaySource = sprintf(
-                        'source.available(%s, predicate.activates({%s}))',
+                        'source.available(track_sensitive=true, %s, predicate.activates({%s}))',
                         $playlistVarName,
                         $minutePlayTime
                     );
@@ -330,7 +330,7 @@ final class ConfigWriter implements EventSubscriberInterface
                         $overlayPredicate = implode(' or ', $overlayPredicates);
 
                         $overlaySource = sprintf(
-                            'source.available(%s, predicate.activates({%s}))',
+                            'source.available(track_sensitive=true, %s, predicate.activates({%s}))',
                             $playlistVarName,
                             $overlayPredicate
                         );
