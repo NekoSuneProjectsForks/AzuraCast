@@ -126,6 +126,16 @@ return static function (CallableEventDispatcherInterface $dispatcher) {
     );
     $dispatcher->addCallableListener(
         Event\Media\GetAlbumArt::class,
+        App\Media\AlbumArtHandler\SpotifyAlbumArtHandler::class,
+        priority: 5
+    );
+    $dispatcher->addCallableListener(
+        Event\Media\GetAlbumArt::class,
+        App\Media\AlbumArtHandler\ITunesAlbumArtHandler::class,
+        priority: 0
+    );
+    $dispatcher->addCallableListener(
+        Event\Media\GetAlbumArt::class,
         App\Media\AlbumArtHandler\MusicBrainzAlbumArtHandler::class,
         priority: -10
     );
