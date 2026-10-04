@@ -139,8 +139,10 @@ final class Shoutcast extends AbstractFrontend
 
         $directoryPublicUrl = $this->getDirectoryPublicUrl($station);
         $urlHost = $directoryPublicUrl->getHost();
-        $directoryPort = $directoryPublicUrl->getPort()
-            ?? ('https' === strtolower($directoryPublicUrl->getScheme()) ? 443 : 80);
+        // Shoutcast directory entries are listener host/port endpoints. For
+        // Cloudflare Tunnel a public HTTP :80 endpoint is reachable without
+        // exposing the private DNAS port; users can explicitly override it.
+        $directoryPort = $directoryPublicUrl->getPort() ?? 80;
 
         $config = [
             'password' => $frontendConfig->source_pw,
