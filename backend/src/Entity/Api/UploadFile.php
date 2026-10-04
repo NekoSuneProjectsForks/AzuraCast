@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[OA\Schema(
     schema: 'Api_UploadFile',
-    required: ['*'],
+    required: ['path', 'file'],
     type: 'object'
 )]
 final readonly class UploadFile
@@ -32,6 +32,15 @@ final readonly class UploadFile
             Assert\NotBlank
         ]
         public string $file,
+        #[
+            OA\Property(
+                description: 'Optional playlist IDs to assign the uploaded media to immediately.',
+                type: 'array',
+                items: new OA\Items(type: 'integer', format: 'int64'),
+                example: [1, 2]
+            )
+        ]
+        public array $playlists = [],
     ) {
     }
 
