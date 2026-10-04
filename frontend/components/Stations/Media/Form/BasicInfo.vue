@@ -51,7 +51,15 @@
                 class="col-md-6"
                 :field="r$.isrc"
                 :label="$gettext('ISRC')"
-                :description="$gettext('International Standard Recording Code, used for licensing reports.')"
+                :description="$gettext('International Standard Recording Code, detected from file metadata when available and used for licensing and cover-art matching.')"
+            />
+
+            <form-group-field
+                id="edit_form_upc"
+                class="col-md-6"
+                :field="r$.upc"
+                :label="$gettext('UPC / EAN Barcode')"
+                :description="$gettext('Release barcode detected from UPC, EAN or BARCODE metadata when available. Used for more accurate album and cover-art matching.')"
             />
         </div>
     </tab>
