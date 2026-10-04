@@ -38,30 +38,34 @@ The maintained release channel for this fork is:
 
 ```text
 NekoSuneProjectsForks/AzuraCast
-branch: main
+branch: modern
 ```
 
-Fork installations check **this repository's `main` branch directly on GitHub** for updates instead of using the official AzuraCast Central update service for release decisions.
+Fork installations check **this repository's `modern` branch directly on GitHub** for updates instead of using the official AzuraCast Central update service for release decisions.
 
 This prevents a modified installation from being told to move back to an upstream image that does not contain the NekoSune fixes.
 
-The admin update page reports whether the installed commit is behind this fork's `main` branch.
+The admin update page reports whether the installed commit is behind this fork's `modern` branch.
 
 ## Docker Images
 
 GitHub Actions builds the maintained Docker image for **linux/amd64** and **linux/arm64**.
 
-Default image:
+Two image channels are maintained:
 
 ```text
-ghcr.io/nekosuneprojectsforks/azuracast:main
+ghcr.io/nekosuneprojectsforks/azuracast:main    # default/base fork channel
+ghcr.io/nekosuneprojectsforks/azuracast:modern  # NekoSune modified feature channel
 ```
 
-The `main` branch also publishes:
+The changes documented in this README are developed on the **modern** channel. The repository's `main` branch remains the default/base branch.
+
+The Docker workflow publishes branch-specific tags:
 
 ```text
-ghcr.io/nekosuneprojectsforks/azuracast:latest
 ghcr.io/nekosuneprojectsforks/azuracast:main
+ghcr.io/nekosuneprojectsforks/azuracast:latest
+ghcr.io/nekosuneprojectsforks/azuracast:modern
 ghcr.io/nekosuneprojectsforks/azuracast:sha-<commit>
 ```
 
@@ -70,7 +74,7 @@ The supplied Docker Compose installer and sample configuration use the maintaine
 ### Pull Manually
 
 ```bash
-docker pull ghcr.io/nekosuneprojectsforks/azuracast:main
+docker pull ghcr.io/nekosuneprojectsforks/azuracast:modern
 ```
 
 ### Compose Override
@@ -78,7 +82,7 @@ docker pull ghcr.io/nekosuneprojectsforks/azuracast:main
 You can explicitly pin the fork channel with:
 
 ```env
-AZURACAST_VERSION=main
+AZURACAST_VERSION=modern
 ```
 
 Then update using your normal AzuraCast Docker update flow. The updater container will pull the image configured for the running AzuraCast service, which in this fork is the NekoSune GHCR image by default.
@@ -102,7 +106,7 @@ Current fork work includes additions such as:
 - native Icecast YP directory listing controls;
 - Shoutcast directory public host/port overrides;
 - Cloudflare Tunnel/reverse-proxy-friendly directory registration without exposing private radio ports;
-- a fork-specific updater that follows this repository's `main` branch;
+- a fork-specific updater that follows this repository's `modern` branch;
 - GitHub Actions based multi-architecture GHCR image publishing.
 
 Features will continue to evolve independently where doing so is useful for NekoSune Community deployments.
