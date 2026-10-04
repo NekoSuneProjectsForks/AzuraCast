@@ -14,8 +14,13 @@
         </div>
         <div class="card-body">
             <h3 class="card-subtitle mt-0">
-                {{ $gettext('Icecast Clients') }}
+                {{ $gettext('Icecast Clients (Mixxx, BUTT, Rocket Broadcaster, etc.)') }}
             </h3>
+            <p class="card-text">
+                {{
+                    $gettext('These applications connect directly to the Liquidsoap DJ/streamer port. This is different from the public listener port and different from the Web DJ WebSocket connection.')
+                }}
+            </p>
             <dl>
                 <dt class="mb-1">
                     {{ $gettext('Server:') }}
@@ -24,7 +29,7 @@
                     <code>{{ connectionServerUrl }}</code>
                 </dd>
                 <dd v-if="connectionIp">
-                    {{ $gettext('You may need to connect directly via your IP address:') }}
+                    {{ $gettext('For a direct/LAN connection, you may connect to the server IP address:') }}
                     <code>{{ connectionIp }}</code>
                 </dd>
 
@@ -39,6 +44,13 @@
                 <dd><code>{{ connectionDjMountPoint }}</code></dd>
 
                 <dt class="mb-1">
+                    {{ $gettext('Connection Type:') }}
+                </dt>
+                <dd>
+                    {{ $gettext('Use Icecast 2 / Icecast source mode. In Mixxx, set the Login field to your DJ username and Password to your DJ password.') }}
+                </dd>
+
+                <dt class="mb-1">
                     {{ $gettext('Username:') }}
                 </dt>
                 <dd><code>dj_username</code></dd>
@@ -48,6 +60,12 @@
                 </dt>
                 <dd><code>dj_password</code></dd>
             </dl>
+
+            <div class="alert alert-info mb-0">
+                {{
+                    $gettext('If the DJ port is not opened on your router/firewall, native Icecast source apps cannot use the server IP and DJ port from outside your network. With Cloudflare Tunnel, use a dedicated DJ-source hostname routed directly to this station DJ port, and configure the broadcasting app for that hostname/HTTPS endpoint if the app supports TLS. The normal AzuraCast website tunnel only proxies Web DJ; it does not automatically expose this raw DJ port.')
+                }}
+            </div>
         </div>
         <div class="card-body">
             <h3 class="card-subtitle mt-0">
