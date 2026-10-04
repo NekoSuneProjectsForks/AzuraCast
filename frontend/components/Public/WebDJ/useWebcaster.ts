@@ -104,6 +104,31 @@ export const [useProvideWebcaster, useInjectWebcaster] =
 
                 let settled = false;
 
+                mediaRecorder.ondataavailable = async (e: BlobEvent) => {
+                    if (
+                        attempt !== connectAttempt ||
+                        !isConnected.value ||
+                        activeSocket.readyState !== WebSocket.OPEN
+                    ) {
+                        return;
+                    }
+
+                    const data = await e.data.arrayBuffer();
+
+                    if (
+                        attempt === connectAttempt &&
+                        activeSocket.readyState === WebSocket.OPEN
+                    ) {
+                        activeSocket.send(data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    if (attempt === connectAttempt) {
+                        closeSocket();
+                    }
+                };
+
                 const rejectConnection = (message: string) => {
                     if (settled || attempt !== connectAttempt) {
                         return;
