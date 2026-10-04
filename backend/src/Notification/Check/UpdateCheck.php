@@ -76,10 +76,10 @@ final class UpdateCheck
                 $event->addNotification(
                     new Notification(
                         id: 'notification-update-new-rolling',
-                        title: __('New NekoSune Fork Main Update Available'),
+                        title: __('New NekoSune Modern Update Available'),
                         body: sprintf(
                             __(
-                                'Your fork installation is currently %d commit(s) behind the maintained main branch. Updating is recommended.'
+                                'Your fork installation is currently %d commit(s) behind the maintained modern branch. Updating is recommended.'
                             ),
                             $updateData->rolling_updates_available
                         ),
