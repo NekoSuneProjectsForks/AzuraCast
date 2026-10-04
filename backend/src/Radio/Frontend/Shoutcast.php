@@ -137,7 +137,10 @@ final class Shoutcast extends AbstractFrontend
 
         [$certPath, $certKey] = Acme::getCertificatePaths();
 
-        $urlHost = $this->getPublicUrl($station)->getHost();
+        $directoryPublicUrl = $this->getDirectoryPublicUrl($station);
+        $urlHost = $directoryPublicUrl->getHost();
+        $directoryPort = $directoryPublicUrl->getPort()
+            ?? ('https' === strtolower($directoryPublicUrl->getScheme()) ? 443 : 80);
 
         $config = [
             'password' => $frontendConfig->source_pw,
@@ -160,6 +163,8 @@ final class Shoutcast extends AbstractFrontend
             'destip' => $urlHost,
             'publicdns' => $urlHost,
             'publicip' => $urlHost,
+            'publicport' => $directoryPort,
+            'publicserver' => $frontendConfig->enable_public_directory ? 'always' : 'never',
         ];
 
         if ($station->max_bitrate !== 0) {
@@ -192,6 +197,11 @@ final class Shoutcast extends AbstractFrontend
             if ($mountRow->authhash) {
                 $config['streamauthhash_' . $i] = $mountRow->authhash;
             }
+
+            $config['streampublicserver_' . $i] = (
+                $frontendConfig->enable_public_directory
+                && $mountRow->is_visible_on_public_pages
+            ) ? 'always' : 'never';
 
             if ($mountRow->max_listener_duration) {
                 $config['streamlistenertime_' . $i] = $mountRow->max_listener_duration;
