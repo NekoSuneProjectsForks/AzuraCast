@@ -11,6 +11,7 @@ use App\Version;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\SimpleCache\CacheInterface;
+use RuntimeException;
 
 final class Spotify
 {
@@ -133,7 +134,7 @@ final class Spotify
         $token = (string)($data['access_token'] ?? '');
 
         if ($token === '') {
-            throw new \RuntimeException('Spotify did not return an access token.');
+            throw new RuntimeException('Spotify did not return an access token.');
         }
 
         $expiresIn = max(60, (int)($data['expires_in'] ?? 3600) - 60);
