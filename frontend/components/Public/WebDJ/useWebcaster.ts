@@ -59,10 +59,7 @@ export const [useProvideWebcaster, useInjectWebcaster] =
         const sendMetadata = (data: WebcasterMetadata) => {
             metadata.value = data;
 
-            if (
-                isConnected.value &&
-                socket?.readyState === WebSocket.OPEN
-            ) {
+            if (isConnected.value && socket?.readyState === WebSocket.OPEN) {
                 socket.send(
                     JSON.stringify({
                         type: "metadata",
